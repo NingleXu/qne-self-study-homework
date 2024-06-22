@@ -12,6 +12,7 @@
     <modules>
         <module>question1</module>
         <module>question2</module>
+        <module>question3</module>
     </modules>
 
     <properties>
