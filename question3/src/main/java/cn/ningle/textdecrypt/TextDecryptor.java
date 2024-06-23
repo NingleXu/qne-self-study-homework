@@ -61,6 +61,7 @@ public class TextDecryptor {
 
 
     public void doDecrypt() {
+        // 预加载与处理解密数据
         propDataPreload();
 
         // 校验并获取 待解密数据 CharSource
@@ -191,7 +192,7 @@ public class TextDecryptor {
      * @version : DecrytorFunctionEnum.java, v 0.1 2024/06/22 23:49 ningle
      * 自定义函数处理枚举类
      **/
-    public enum DecrytorFunctionEnum implements BiFunction<TextDecryptor, Integer, String> {
+    private enum DecrytorFunctionEnum implements BiFunction<TextDecryptor, Integer, String> {
         // 自然排序
         NATURE_ORDER("natureOrder") {
             @Override

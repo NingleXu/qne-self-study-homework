@@ -84,7 +84,7 @@ public class LogFileParser {
         // [0] = "" [1] = "AAA"
         statsResult.requestURIMap.put(URIResource[1], requestURIStr);
 
-        //记录每个请求接口的出现次数
+        // 记录每个请求接口的出现次数
         statsResult.requestURICountSet.add(line);
     }
 
