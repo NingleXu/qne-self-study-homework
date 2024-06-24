@@ -24,7 +24,9 @@ public class CommandHandler {
         // 执行命令
         Collection<String> executeResult = commandChain.execute(new CommandExecuteContext());
         // 输出结果
-        System.out.println(executeResult);
+        for (String str : executeResult) {
+            System.out.println(str);
+        }
     }
 
     private static Command parseCommend(String command) {

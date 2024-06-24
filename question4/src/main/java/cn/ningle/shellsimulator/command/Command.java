@@ -31,7 +31,7 @@ public abstract class Command {
 
         // 执行当前指令处理
         Collection<String> executeResult = commandProcess(context);
-
+        // 将当前指令执行结果暂存
         context.setPreResult(executeResult);
         // 当前为最后一个指令
         if (nextCommand == null) {

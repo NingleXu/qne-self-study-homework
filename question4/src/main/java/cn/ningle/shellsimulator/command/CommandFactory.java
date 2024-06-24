@@ -31,6 +31,8 @@ public class CommandFactory {
                 return new WcCommend(standardCommend);
             case "grep":
                 return new GrepCommend(standardCommend);
+            case "ls":
+                return new LsCommand(standardCommend);
             default:
                 throw new UnsupportedOperationException("unknown command: " + standardCommend);
         }
