@@ -1,7 +1,7 @@
 package cn.ningle.network.nio;
 
-import cn.ningle.network.nio.message.RequestMessageFormatter;
-import cn.ningle.network.nio.message.ResponseMessageFormatter;
+import cn.ningle.network.nio.channel.SocketChannelReadHandler;
+import cn.ningle.network.nio.channel.SocketChannelWriteHandler;
 import com.google.common.base.Preconditions;
 
 import java.io.IOException;
@@ -22,9 +22,11 @@ public class Server {
 
     private ClientEventWorker clientEventWorker;
 
-    private RequestMessageFormatter requestMessageFormatter;
 
-    private ResponseMessageFormatter responseMessageFormatter;
+    private SocketChannelReadHandler readHandler;
+
+    private SocketChannelWriteHandler writeHandler;
+
 
     public static Server getInstance() {
         return new Server();
@@ -38,13 +40,13 @@ public class Server {
         return this;
     }
 
-    public Server requestFormatter(RequestMessageFormatter requestMessageFormatter) {
-        this.requestMessageFormatter = requestMessageFormatter;
+    public Server readHandler(SocketChannelReadHandler socketChannelReadHandler) {
+        this.readHandler = socketChannelReadHandler;
         return this;
     }
 
-    public Server responseFormatter(ResponseMessageFormatter responseMessageFormatter) {
-        this.responseMessageFormatter = responseMessageFormatter;
+    public Server writeHandler(SocketChannelWriteHandler socketChannelWriteHandler) {
+        this.writeHandler = socketChannelWriteHandler;
         return this;
     }
 
@@ -85,12 +87,12 @@ public class Server {
     }
 
     private void creatWorker() {
-        clientEventWorker = new ClientEventWorker(requestMessageFormatter, responseMessageFormatter);
+        clientEventWorker = new ClientEventWorker(readHandler, writeHandler);
     }
 
     private void argsChecked() {
-        Preconditions.checkArgument(null != requestMessageFormatter, "requestFormatter is null");
-        Preconditions.checkArgument(null != responseMessageFormatter, "responseFormatter is null");
+        Preconditions.checkArgument(null != readHandler, "readHandler is null");
+        Preconditions.checkArgument(null != writeHandler, "writeHandler is null");
         Preconditions.checkArgument(null != netSocketAddress, "port is null");
     }
 

@@ -1,14 +1,10 @@
 package cn.ningle.network.nio;
 
-import cn.ningle.network.nio.channel.DefaultSocketChannelReader;
-import cn.ningle.network.nio.channel.DefaultSocketChannelWriter;
-import cn.ningle.network.nio.channel.SocketChannelReader;
-import cn.ningle.network.nio.channel.SocketChannelWriter;
+import cn.ningle.network.nio.channel.SocketChannelReadHandler;
+import cn.ningle.network.nio.channel.SocketChannelWriteHandler;
 import cn.ningle.network.nio.http.HttpRequestHandler;
 import cn.ningle.network.nio.message.RequestMessage;
-import cn.ningle.network.nio.message.RequestMessageFormatter;
 import cn.ningle.network.nio.message.ResponseMessage;
-import cn.ningle.network.nio.message.ResponseMessageFormatter;
 
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
@@ -29,13 +25,10 @@ public class ClientEventWorker implements Runnable {
      */
     private Selector clientEventSelector;
 
-    private final RequestMessageFormatter requestMessageFormatter;
+    private SocketChannelReadHandler readHandler;
 
-    private final ResponseMessageFormatter responseMessageFormatter;
+    private SocketChannelWriteHandler writeHandler;
 
-    private final SocketChannelReader socketChannelReader = new DefaultSocketChannelReader();
-
-    private final SocketChannelWriter socketChannelWriter = new DefaultSocketChannelWriter();
 
     private final ThreadPoolExecutor RequestMessageHandlerExecutors = new ThreadPoolExecutor(
             10,
@@ -51,9 +44,9 @@ public class ClientEventWorker implements Runnable {
      */
     private final AtomicBoolean isInit = new AtomicBoolean(false);
 
-    public ClientEventWorker(RequestMessageFormatter requestMessageFormatter, ResponseMessageFormatter responseMessageFormatter) {
-        this.requestMessageFormatter = requestMessageFormatter;
-        this.responseMessageFormatter = responseMessageFormatter;
+    public ClientEventWorker(SocketChannelReadHandler socketChannelReadHandler, SocketChannelWriteHandler socketChannelWriteHandler) {
+        this.readHandler = socketChannelReadHandler;
+        this.writeHandler = socketChannelWriteHandler;
     }
 
 
@@ -110,7 +103,9 @@ public class ClientEventWorker implements Runnable {
     void readHandler(SocketChannel sc) throws IOException {
 
         try {
-            RequestMessage requestMessage = requestMessageFormatter.decode(socketChannelReader.read(sc));
+            RequestMessage requestMessage = readHandler.readHandle(sc, RequestMessage.class);
+
+            if (null == requestMessage) return;
 
             // RequestMessageHandlerExecutors线程池执行处理 RequestMessage
             RequestMessageHandlerExecutors.submit(() -> {
@@ -132,7 +127,7 @@ public class ClientEventWorker implements Runnable {
 
                 // do response
                 try {
-                    socketChannelWriter.write(responseMessageFormatter.encode(responseMessage), sc);
+                    writeHandler.writeHandler(sc, responseMessage);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -140,7 +135,6 @@ public class ClientEventWorker implements Runnable {
         } catch (Exception e) {
             throw new IOException(e);
         }
-
     }
 
 

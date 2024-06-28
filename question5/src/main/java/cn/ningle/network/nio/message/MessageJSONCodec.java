@@ -8,28 +8,25 @@ import java.nio.charset.*;
 
 /**
  * @author ningle
- * @version : ResponseMessageFormatter.java, v 0.1 2024/06/27 11:46 ningle
+ * @version : MessageJSONCodec.java, v 0.1 2024/06/28 11:08 ningle
  **/
-public class ResponseMessageFormatter implements MessageFormatter<ResponseMessage> {
-
+public class MessageJSONCodec implements MessageCodec {
     @Override
-    public ResponseMessage decode(ByteBuffer byteBuffer) throws CharacterCodingException {
-        CharBuffer charBuffer = CharBuffer.allocate(1024);
+    public <T> T decode(ByteBuffer byteBuffer, Class<T> clazz) throws CharacterCodingException {
+        CharBuffer charBuffer = CharBuffer.allocate(byteBuffer.remaining());
         Charset charset = StandardCharsets.UTF_8;
         CharsetDecoder decoder = charset.newDecoder();
-        byteBuffer.flip();
         CoderResult result = decoder.decode(byteBuffer, charBuffer, true);
         if (result.isError()) {
             result.throwException();
         }
         charBuffer.flip();
-        return JSON.parseObject(charBuffer.array(), ResponseMessage.class);
+        return JSON.parseObject(charBuffer.toString(), clazz);
     }
 
     @Override
-    public ByteBuffer encode(ResponseMessage responseMessage) {
-        byte[] jsonBytes = JSON.toJSONBytes(responseMessage);
+    public <T> ByteBuffer encode(T t) {
+        byte[] jsonBytes = JSON.toJSONBytes(t);
         return ByteBuffer.wrap(jsonBytes);
     }
-
 }

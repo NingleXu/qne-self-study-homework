@@ -1,8 +1,11 @@
 package cn.ningle.network;
 
 import cn.ningle.network.nio.Client;
-import cn.ningle.network.nio.message.RequestMessageFormatter;
-import cn.ningle.network.nio.message.ResponseMessageFormatter;
+import cn.ningle.network.nio.channel.LengthFieldBaseFrameEncoder;
+import cn.ningle.network.nio.channel.LengthFieldBasedFrameDecoder;
+import cn.ningle.network.nio.channel.SocketChannelReadHandler;
+import cn.ningle.network.nio.channel.SocketChannelWriteHandler;
+import cn.ningle.network.nio.message.MessageJSONCodec;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -15,8 +18,14 @@ import java.util.Scanner;
 public class ClientBootstrap {
     public static void main(String[] args) {
         try (Client client = Client.getInstance()
-                .responseFormatter(new ResponseMessageFormatter())
-                .requestFormatter(new RequestMessageFormatter())
+                .readHandler(new SocketChannelReadHandler(
+                        new MessageJSONCodec(),
+                        new LengthFieldBasedFrameDecoder(4)
+                ))
+                .writeHandler(new SocketChannelWriteHandler(
+                        new MessageJSONCodec(),
+                        new LengthFieldBaseFrameEncoder(4)
+                ))
                 .serverAddress(new InetSocketAddress("127.0.0.1", 8099)
                 ).start()) {
             Scanner sc = new Scanner(System.in);
