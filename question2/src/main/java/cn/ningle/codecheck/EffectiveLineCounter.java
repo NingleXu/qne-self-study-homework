@@ -6,6 +6,7 @@ import com.google.common.io.CharSource;
 import com.google.common.io.Files;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -15,7 +16,7 @@ import java.nio.charset.StandardCharsets;
  **/
 public class EffectiveLineCounter {
 
-    public static int doStats(String fileURL) {
+    public static void doStats(String fileURL, String resultFileURL) {
         CharSource fileCharSource = checkFileAndGetCharSource(fileURL);
 
         // 利用context储存解析过程的数据
@@ -28,8 +29,13 @@ public class EffectiveLineCounter {
             throw new RuntimeException("parse error!", e);
         }
 
-        // 统计完毕 返回有效代码数
-        return effectiveLineParseContext.effectiveLineCount;
+        // 统计完毕 写入有效代码数
+        try {
+            Files.asCharSink(new File(resultFileURL), StandardCharsets.UTF_8)
+                    .write(String.valueOf(effectiveLineParseContext.effectiveLineCount));
+        } catch (IOException e) {
+            throw new RuntimeException("write error!", e);
+        }
     }
 
 

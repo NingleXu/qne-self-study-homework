@@ -65,7 +65,7 @@ public class HttpRequestHandler {
             long totalCharacterCount = responseString.length();
             long chineseCharacterCount = countChineseCharacters(responseString);
             long englishCharacterCount = countEnglishCharacters(responseString);
-            long punctuationMarkCount = countPunctuationMarks(responseString);
+            long punctuationMarkCount = totalCharacterCount - chineseCharacterCount - englishCharacterCount;
 
             return ResponseMessage.success(requestURL, totalCharacterCount, englishCharacterCount, chineseCharacterCount, punctuationMarkCount);
         } catch (SocketTimeoutException | ConnectTimeoutException e) {

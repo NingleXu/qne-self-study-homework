@@ -121,7 +121,7 @@ public class TextDecryptor {
      * @return CharSink
      */
     private CharSink ensureEncryptedFileAbsendAndGetCharSink() {
-        File file = new File(decryptedTextPath);
+        File file = new File(decryptedTextPath + "/sdxl.txt");
         file.deleteOnExit();
         return Files.asCharSink(new File(decryptedTextPath + "/sdxl.txt"), StandardCharsets.UTF_8);
     }

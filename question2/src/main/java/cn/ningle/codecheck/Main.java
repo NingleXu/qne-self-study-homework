@@ -6,6 +6,7 @@ package cn.ningle.codecheck;
  **/
 public class Main {
     public static void main(String[] args) {
-        System.out.println(EffectiveLineCounter.doStats("attachments/Question 2/StringUtils.java"));
+       EffectiveLineCounter.doStats("attachments/Question 2/StringUtils.java",
+                "validLineCount.txt");
     }
 }
